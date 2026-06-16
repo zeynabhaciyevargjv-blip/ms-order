@@ -2,10 +2,13 @@ package com.example.orderservice.service.impl;
 
 
 import com.example.orderservice.Enum.OrderStatus;
+import com.example.orderservice.client.CourierFeignClient;
 import com.example.orderservice.dto.request.CreateOrderRequestDto;
+import com.example.orderservice.dto.response.CourierResponseDto;
 import com.example.orderservice.dto.response.OrderResponseDto;
 import com.example.orderservice.entity.Order;
 import com.example.orderservice.exception.IdNotFoundException;
+import com.example.orderservice.exception.NotAvailableException;
 import com.example.orderservice.repository.OrderRepository;
 import com.example.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +22,22 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ModelMapper modelMapper;
+    private final CourierFeignClient courierFeignClient;
     @Override
     public OrderResponseDto createOrder(CreateOrderRequestDto request) {
+
+        CourierResponseDto courier =
+                courierFeignClient.getAvailableCourier();
+
+        if (courier == null) {
+            throw new NotAvailableException("No courier available");
+        }
         Order order = Order.builder()
                 .pickupAddress(request.getPickupAddress())
                 .deliveryAddress(request.getDeliveryAddress())
+                .courierId(courier.id())
                 .deliveryFee(5.0)
-                .status(OrderStatus.CREATED)
+                .status(OrderStatus.ASSIGNED)
                 .build();
 
         Order saveOrder = orderRepository.save(order);

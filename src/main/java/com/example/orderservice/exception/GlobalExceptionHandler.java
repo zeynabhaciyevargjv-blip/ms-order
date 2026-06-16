@@ -42,4 +42,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(error);
     }
+    @ExceptionHandler(NotAvailableException.class)
+    public ResponseEntity<ErrorResponseDto> handleAvailableException(NotAvailableException e,
+                                                              HttpServletRequest request){
+
+        ErrorResponseDto error = new ErrorResponseDto(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                "NOT_AVAILABLE",
+                e.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(error);
+    }
 }

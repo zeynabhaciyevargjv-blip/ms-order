@@ -10,7 +10,7 @@ description = 'orderservice'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -39,6 +39,14 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     //modelMapper
     implementation 'org.modelmapper:modelmapper:3.2.2'
+    //Feign
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2023.0.3"
+    }
 }
 
 tasks.named('test') {
